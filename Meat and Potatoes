@@ -1,0 +1,254 @@
+# Work with Python 3.6
+import discord
+import random
+import re
+
+TOKEN = #insert your own Discord bot token here. This program WILL NOT FUNCTION without one. 
+
+
+class deck: #creates a deck of "cards", each with a suit and value
+    def __init__(self):
+        self.suits = ['Clubs','Hearts','Spades','Diamonds']
+        self.values = ['Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Jack','Queen','King','Ace']
+        self.deckorder = []
+        self.discardpile = []
+        for i in self.suits: #runs through the suits and values and adds them all together
+            for j in self.values:
+                self.deckorder.append(card(j,i))
+    def drawfromdeck(self): #takes the first card on the deck, removes it from the deck, returns that. Fix the string function
+        toretcard = self.deckorder.pop(0)
+        return str(toretcard)
+    def shuffle(self): #shuffles the deck
+        random.shuffle(self.deckorder)
+    def discarddraw(self): #draws from the discard pile and shuffles it to prevent abuse of the system
+        if len(self.discardpile) == 0:
+            return 'no'
+        else: 
+            toretcard = self.discardpile.pop(0)
+            self.discardpile.append(toretcard)
+            random.shuffle(self.discardpile)
+            return toretcard
+    def discardto(self,trashcard): #takes a card input and puts it in the discard pile
+        self.discardpile.append(trashcard)
+            
+
+class card(): # an individual card that exists to hold a suit and value
+    def __init__(self,value,suit,candiscard = True):
+        self.value = value
+        self.suit = suit
+    def __str__(self): #returns a string when called. Consider adding a suitless function ie for jokers, arcana, etc
+        return self.value + ' of ' + self.suit
+    def getsuit(self):
+        print(self.suit)
+    def getvalue(self):
+        return self.value
+
+class hand(): #creates a hand of cards. Compare and contrast with a hidden hand?
+    def __init__(self):
+        self.handcards = []
+    def drawcard(self, deck): #draws a card from the prescribed deck and adds it to hand
+        newcard = deck.drawfromdeck()
+        self.handcards.append(newcard)
+        return newcard
+    def displaycards(self): #displays the current hand
+        return self.handcards
+    def discardcard(self, deck, carddex = 0): # makes sure that there's a goodly number of cards and discards selected
+        if len(self.handcards) == 0: #defaults to the first card on the lists
+            return 'You have no cards to discard!'
+        elif carddex > len(self.handcards) - 1:
+            return 'You have too few cards!'
+        else: 
+            trashcard = self.handcards.pop(carddex)
+            deck.discardto(trashcard)
+            return(trashcard)
+
+class hiddenhand():
+    def __init__(self):
+        self.hiddencards = []
+    def hiddendraw(self,deck):
+        newcard = deck.drawfromdeck()
+        self.hiddencards.append(newcard)
+        return 'Drew a card'
+    def hiddendiscard(self): #discards a card without revealing it
+        return
+    def revealcards(self): #takes a card, reveals it, adds to hand
+        return
+
+class player(): # what basically links the user with the other methods. Can draw, display, and discard cards. Consider a separate "dealer"
+    def __init__(self):
+        self.myhand = hand()
+        self.myhiddenhand = []
+    def drawcard(self,deck):
+        return self.myhand.drawcard(deck)
+    def displaycards(self):
+        return self.myhand.displaycards()
+    def discardcard(self,deck,carddex=0):
+        return self.myhand.discardcard(deck,carddex)
+
+class dealer():  # dealer should exist outside of playergroup, work that in
+    def __init__(self):
+        self.myhand = hand()
+        self.myhiddenhand = []
+        #self.groupname = mygroup
+    def drawcard(self,deck):
+        return self.myhand.drawcard(deck)
+    def displaycards(self):
+        return self.myhand.displaycards()
+    #def dealcard(self,deck,player):
+    #    playerstring = str(player)
+    #    return self.groupname.playerlist[playerstring].drawcard(deck)
+    #def removeplayercard(self,deck,player,carddex = 0):
+    #    playerstring = str(player)
+    #    return self.groupname.playerlist[playerstring].discardcard(deck,carddex = 0)
+
+class playergroup(): #creates a list of players, each with their own "hands" and miscellaneous stuff (scores?)
+    def __init__(self):
+        self.playerlist = {} #creates a dictionary with each player's name or ID corresponding to a separate player
+    def dealmein(self,myname): 
+        self.playerlist[myname] = player() #adds the player to the list
+    def drawcard(self,player,deck): #gets the player's ID and has them draw a card to their hand
+        playerstring = str(player)
+        return self.playerlist[playerstring].drawcard(deck)
+    def displaycards(self,player): #second verse same as the first
+        playerstring = str(player)
+        return self.playerlist[playerstring].drawcard(deck)
+    def discardcard(self,player,deck,carddex=0): #etc
+        playerstring = str(player)
+        return self.playerlist[playerstring].discardcard(deck,carddex)
+
+
+#contains a playergroup and a dealer. Also serves to maintain game rules
+#for instance, if a player plays a card that makes another player draw the card, that card will be parsed by
+#the wholegame class to enact the rules. 
+    
+class wholegame(): 
+    def __init__(self,gamedealer):
+        self.gamedealer = dealer()
+        self.gamegroup = playergroup()            
+    def charroll(num,side):
+        tosum = 0
+        rollist = []
+        for i in range(1,num+1):
+            tempnum = random.randint(1,side)
+            tosum += tempnum
+            rollist.append(tempnum)
+        tosum -= min(rollist)
+        return [tosum,rollist]
+client = discord.Client()
+@client.event
+async def on_message(message):
+    # we do not want the bot to reply to itself
+    
+    if message.author == client.user:
+        return
+
+    if message.content.startswith('!roll'):
+        pattern = '(!roll) +(\d+)d(\d+)( *[\+-] *\d+)*' #creates something that recognizes '!roll XdY + Z', with X, Y and Z being numbers. Note that Z is optional and can be positive or negative
+        dicenumpat = "\d+d" # unnecessary. Possibly remove
+        dicesizepat = "d\d +"
+        p = re.compile(pattern)
+        m = p.match(message.content)
+        if m == None: #exists as a sanity check to avoid typos
+            msg = 'I didn\'t understand that. Please phrase your roll as \'!roll XdY + Z\', where X, Y and Z are integers' 
+            await message.channel.send(msg)
+        else:
+            dicenum = m.group(2) #isolates the number of dice
+            dicesize = m.group(3) #gets the number of 'sides' on the dice
+            dicebonusraw = str(m.group(4)) #gets the absolute value of the bonus
+            dicebonuspat = '\D*([+-])(\d+)' # determines if the bonus is to be subtracted or added
+            dbp = re.compile(dicebonuspat)
+            dbm = dbp.match(dicebonusraw)
+
+            if dbm == None: #if there's no bonus it's not counted
+                dicebonusint = 0 
+                dicebonus = '0'
+            else: 
+                dicestr = dbm.group(2) #gets the bonus
+                dbsmg = dbm.group(1) # gets the sign
+                dicestrnew = dicestr.replace(' ','') #what the hell does this do 
+                if dbsmg == '+': # if positive adds a plus sign as the bonus string, leaves the int alone
+                    dicebonus = str(dicestr)
+                    dicebonusint = int(dicebonus)
+                else:  #is negative adds a minus sign, makes sure the bonus is negative
+                    dicebonus = str(dicestr)
+                    dicebonusint = int(dicebonus) * -1
+        
+            iaminhell = dicenum + dicesize + str(dicebonus)
+            dicenumint = int(dicenum) #gets the number for the sum
+            dicesizeint = int(dicesize) #gets the number for the sum
+        
+        
+            rollist = []
+            rollsum = 0
+            for i in range(1,dicenumint+1):
+                roll = random.randint(1,dicesizeint) #rolls multiple times
+                rollist.append(roll)
+                rollsum+=roll
+            rollsum+=dicebonusint #ads those all together
+            strrollist = [str(i) for i in rollist] #creates a list of numbers for the string
+            rollstr = ' + '.join(strrollist) #gets them formatted for the string
+            newstr = 'You rolled ' + rollstr + ' + ' + str(dicebonusint) + ' = ' + str(rollsum) #outputs that
+        
+            msg = iaminhell.format(message)
+            await message.channel.send(newstr) #provides the string
+            await message.channel.send(rollsum) #provides the sum
+    elif message.content.startswith('!charoll'):
+        chard = charroll(4,6) #see 'charroll'
+        msg = str(chard[0]).format(message)
+        listmsg = str(chard[1]).format(message)
+        await client.send_message(message.channel,msg)
+        await client.send_message(message.channel,listmsg)
+    elif message.content.startswith('!dealmein'): 
+        playername = str(message.author.id)
+        msg = 'Welcome ' + playername
+        mygroup.dealmein(playername)
+        playerlist = []
+        for i in mygroup.playerlist:
+            playerlist.append(i)
+        trundle = ' '.join(playerlist)
+        await message.channel.send(msg)
+        await message.channel.send(trundle)
+    elif message.content.startswith('!draw'): #see 'draw'
+        playername = str(message.author.id)
+        await message.channel.send('sending in')
+        newdrawn = mygroup.playerlist[playername].drawcard(newdeck)
+        await message.channel.send('we do not quite suck')
+        await message.channel.send(newdrawn)
+    elif message.content.startswith('!discarddraw'):
+        playername = str(message.author)
+        newdrawn = str(newdeck.discarddraw())
+        await message.channel.send(newdrawn)
+    elif message.content.startswith('!shuffle'):
+        newdeck.shuffle()
+    elif message.content.startswith('!displayhand'):
+        playername = message.author.id
+        handlist = mygroup.playerlist[playername].displaycards()
+        handlist = [str(i) for i in handlist]
+        joinlist = '\n'.join(handlist)
+        sendlist = 'You have the following cards: \n' + joinlist
+        await message.channel.send(sendlist)
+    elif message.content.startswith('!discard'): 
+        dexpattern = '(\D+)(\d*)' #gets the pattern to isolate the number
+        dexcomp = re.compile(dexpattern)
+        dexmatch = dexcomp.match(message.content)
+        if dexmatch.group(2) == '':
+            tosscard = newhand.discardcard(newdeck) #if there's no index, just runs the default
+        else: 
+            groupint = int(dexmatch.group(2)) - 1 #because people don't think like Python compilers
+            tosscard = newhand.discardcard(newdeck,groupint) #runs it with that index in mind
+        tosswarning = 'You threw away the ' + str(tosscard) # make it so that this doesn't spit out the same message for errors
+        #also consider adding an undo function
+        await message.channel.send(tosswarning)
+    elif message.content.startswith('!taunt'):
+        warning = 'Do not taunt Happy Fun Bot'
+        await message.channel.send(warning)
+@client.event
+async def on_ready():
+    print('Logged in as')
+    print(client.user.name)
+    print(client.user.id)
+    print('------')
+
+newdeck = deck()
+mygroup = playergroup()
+client.run(TOKEN)
