@@ -33,18 +33,16 @@ As of this point in the bot's development, it has the following feaures.
     D. Allows the player to discard a card from their hand. 
   
 
-4. A Player. A player exists in the context of the group. Each player has a Hand. 
-
-      Eventually they will have other stats such as HP, STR, etc. Currently the player exists as a holder class for a Hand, however. 
+4. A Player. A player exists in the context of the group. Each player has a Hand. Eventually they will have other stats such as HP, STR, etc. Currently the player exists as a holder class for a Hand, however. 
     
 
 5. A Hand. This is the way that the player can interact with the game in the context of cards. Can:
 
-  A. Draw a card with drawcard or the !draw command.
+    A. Draw a card with drawcard or the !draw command.
   
-  B. Display cards with !displaycards and the !displayhand command
+    B. Display cards with !displaycards and the !displayhand command
   
-  C. Discard cards with the !discard command. 
+    C. Discard cards with the !discard command. 
   
   
 6. A Hiddenhand. Has no discernable function at this time. Eventually will serve like a hand in poker
@@ -55,9 +53,9 @@ As of this point in the bot's development, it has the following feaures.
 
 8. Dice functions. These are:
 
-  A. Roll function. When prompted with !roll and a string of characters akin to DnD dice notation of XdY, where X refers to the number of dice and Y refers to the number of sides on those dice. It will then roll the dice in that manner. If it doesn't receive that, it'll throw an error message. Eventually will include the possibility of bonuses (ie + and -). 
+    A. Roll function. When prompted with !roll and a string of characters akin to DnD dice notation of XdY, where X refers to the number of dice and Y refers to the number of sides on those dice. It will then roll the dice in that manner. If it doesn't receive that, it'll throw an error message. Eventually will include the possibility of bonuses (ie + and -). 
   
-  B. Charoll function. In DnD, stats are often determined by rolling 4d6 and discarding the lowest roll. This does that, and shows the player all 4 rolls to satisfy their curiosity. 
+    B. Charoll function. In DnD, stats are often determined by rolling 4d6 and discarding the lowest roll. This does that, and shows the player all 4 rolls to satisfy their curiosity. 
   
   
 The commands accessible to users are as follows: 
