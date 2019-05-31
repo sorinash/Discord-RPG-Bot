@@ -15,5 +15,9 @@ Completed goals thus far:
 Current goals:
 
 1: Update code to gel with updates to discord.py. 
+
 2: Bug/error fixes, troubleshooting, etc. 
-3: Get player stats involved. HP, basic DND stats, etc. 
+
+3: Comment code properly for collaboration with people other than myself. 
+
+4: Get player stats involved. HP, basic DND stats, etc. 
