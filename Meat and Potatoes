@@ -3,7 +3,7 @@ import discord
 import random
 import re
 
-TOKEN = #insert your own Discord bot token here. This program WILL NOT FUNCTION without one. 
+TOKEN = 'NTU2OTMzNjM3NDkzNDg5Njg0.D3CJjQ.DvCg3G-N1PPGjXGQr7UqTwxE3H4'
 
 
 class deck: #creates a deck of "cards", each with a suit and value
@@ -125,15 +125,15 @@ class wholegame():
     def __init__(self,gamedealer):
         self.gamedealer = dealer()
         self.gamegroup = playergroup()            
-    def charroll(num,side):
-        tosum = 0
-        rollist = []
-        for i in range(1,num+1):
-            tempnum = random.randint(1,side)
-            tosum += tempnum
-            rollist.append(tempnum)
-        tosum -= min(rollist)
-        return [tosum,rollist]
+def charroll(num,side):
+    tosum = 0
+    rollist = []
+    for i in range(1,num+1):
+        tempnum = random.randint(1,side)
+        tosum += tempnum
+        rollist.append(tempnum)
+    tosum -= min(rollist)
+    return [tosum,rollist]
 client = discord.Client()
 @client.event
 async def on_message(message):
@@ -196,8 +196,8 @@ async def on_message(message):
         chard = charroll(4,6) #see 'charroll'
         msg = str(chard[0]).format(message)
         listmsg = str(chard[1]).format(message)
-        await client.send_message(message.channel,msg)
-        await client.send_message(message.channel,listmsg)
+        await message.channel.send(msg)
+        await message.channel.send(listmsg)
     elif message.content.startswith('!dealmein'): 
         playername = str(message.author.id)
         msg = 'Welcome ' + playername
@@ -221,21 +221,22 @@ async def on_message(message):
     elif message.content.startswith('!shuffle'):
         newdeck.shuffle()
     elif message.content.startswith('!displayhand'):
-        playername = message.author.id
+        playername = str(message.author.id)
         handlist = mygroup.playerlist[playername].displaycards()
         handlist = [str(i) for i in handlist]
         joinlist = '\n'.join(handlist)
         sendlist = 'You have the following cards: \n' + joinlist
         await message.channel.send(sendlist)
     elif message.content.startswith('!discard'): 
+        playername = str(message.author.id)
         dexpattern = '(\D+)(\d*)' #gets the pattern to isolate the number
         dexcomp = re.compile(dexpattern)
         dexmatch = dexcomp.match(message.content)
         if dexmatch.group(2) == '':
-            tosscard = newhand.discardcard(newdeck) #if there's no index, just runs the default
+            tosscard = mygroup.playerlist[playername].discardcard(newdeck) #if there's no index, just runs the default
         else: 
             groupint = int(dexmatch.group(2)) - 1 #because people don't think like Python compilers
-            tosscard = newhand.discardcard(newdeck,groupint) #runs it with that index in mind
+            tosscard = mygroup.playerlist[playername].discardcard(newdeck,groupint) #runs it with that index in mind
         tosswarning = 'You threw away the ' + str(tosscard) # make it so that this doesn't spit out the same message for errors
         #also consider adding an undo function
         await message.channel.send(tosswarning)
