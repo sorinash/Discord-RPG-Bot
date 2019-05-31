@@ -5,39 +5,37 @@ Requires the installation of discord.py, which can be gotten through pip.
 
 Note that you will have to run it directly through your command line via py-3 (filename).py, with (filename) being whatever you call the file. 
 
-Also note that I wrote the first draft of this bot a month or two prior to a large update to the discord.py package, and thus not all of the commands function as they should. 
+Also note that I wrote the first draft of this bot a month or two prior to a large update to the discord.py package, and thus not all of the commands function as they should. As of this moment most of the commands should function according to plan.
 
 As of this point in the bot's development, it has the following feaures. 
 
 1. A Deck. A deck serves as a deck of playing cards. It can:
 
-  A. Be shuffled, with the !shuffle command via the shuffle function.
+    A. Be shuffled, with the !shuffle command via the shuffle function.
   
-  B. Be drawn from with the !draw command via the drawfromdeck function. 
+    B. Be drawn from with the !draw command via the drawfromdeck function. 
   
-  C. Discard a card given to it by a player, using the !discard command and the discardto function.
+    C. Discard a card given to it by a player, using the !discard command and the discardto function.
   
-  D. Allow the player to draw from the discard pile using the disccarddraw function.
+    D. Allow the player to draw from the discard pile using the disccarddraw function.
 
 2. A Card. A card consists of a suit and a value, and will return those with 'getsuit' or 'getvalue'. 
 
 
 3. A Playergroup. Within the context of a game, the playergroup consists of all people who can play.
 
-  A. Players can enter the playergroup with !dealmein and the dealmeinfunction. 
+    A. Players can enter the playergroup with !dealmein and the dealmeinfunction. 
   
-  B. Lets the player draw a card and gives it to the relevant hand.
+    B. Lets the player draw a card and gives it to the relevant hand.
   
-  C. Displays the player's card depending on the player's ID. 
+    C. Displays the player's card depending on the player's ID. 
   
-  D. Allows the player to discard a card from their hand. 
+    D. Allows the player to discard a card from their hand. 
   
 
 4. A Player. A player exists in the context of the group. Each player has a Hand. 
 
-    Eventually they will have other stats such as HP, STR, etc. 
-    
-    Currently the player exists as a holder class for a Hand, however. 
+      Eventually they will have other stats such as HP, STR, etc. Currently the player exists as a holder class for a Hand, however. 
     
 
 5. A Hand. This is the way that the player can interact with the game in the context of cards. Can:
