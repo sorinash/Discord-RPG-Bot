@@ -250,6 +250,8 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
+
+TOKEN = input('Każdy, kto cię kochał, popełnił błąd: ')
 newdeck = deck()
 mygroup = playergroup()
 client.run(TOKEN)
