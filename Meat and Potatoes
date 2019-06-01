@@ -3,7 +3,7 @@ import discord
 import random
 import re
 
-TOKEN = 'NTU2OTMzNjM3NDkzNDg5Njg0.D3CJjQ.DvCg3G-N1PPGjXGQr7UqTwxE3H4'
+TOKEN = #gargle my smegma
 
 
 class deck: #creates a deck of "cards", each with a suit and value
