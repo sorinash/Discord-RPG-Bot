@@ -3,7 +3,7 @@ import discord
 import random
 import re
 
-TOKEN = #gargle my smegma
+TOKEN = #twoja matka nigdy cię nie kochała
 
 
 class deck: #creates a deck of "cards", each with a suit and value
