@@ -3,7 +3,7 @@ import discord
 import random
 import re
 
-#TOKEN = twoja matka nigdy cię nie kochała
+#TOKEN = Not messing that up again
 
 
 class deck: #creates a deck of "cards", each with a suit and value
